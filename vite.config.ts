@@ -14,15 +14,13 @@ const config = defineConfig({
   build: {
     rollupOptions: {
       output: {
-        codeSplitting: {
-          groups: [
-            {
-              name: 'vendor',
-              minSize: 100000, // 100KB
-              maxSize: 300000, // 300KB
-              priority: 10,
-            },
-          ],
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            const parts = id.split('node_modules/')[1].split('/')
+            return parts[0].startsWith('@')
+              ? `${parts[0]}/${parts[1]}`
+              : parts[0]
+          }
         },
       },
     },
@@ -54,9 +52,9 @@ const config = defineConfig({
     }),
 
     tanstackStart({
-      // router: {
-      //   codeSplittingOptions: {},
-      // },
+      router: {
+        codeSplittingOptions: {},
+      },
     }),
     viteReact({}),
   ],
